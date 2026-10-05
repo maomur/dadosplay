@@ -1,10 +1,10 @@
 {
   // Servidor de partidas online (Cloudflare Workers + Durable Objects)
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "dadosplay-online",
+  "name": "dadosplay",
   "main": "server/index.ts",
   "compatibility_date": "2025-09-01",
-  // Publicar siempre en dadosplay-online.<cuenta>.workers.dev
+  // Publicar siempre en dadosplay.<cuenta>.workers.dev
   "workers_dev": true,
   "durable_objects": {
     "bindings": [{ "name": "GameRoom", "class_name": "GameRoom" }]

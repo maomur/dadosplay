@@ -1,6 +1,6 @@
 // Dirección del servidor de salas online (Cloudflare Worker).
 // Se puede cambiar con la variable VITE_PARTY_HOST (en local: 127.0.0.1:8787).
-const DEFAULT_PARTY_HOST = 'dadosplay-online.maomur.workers.dev'
+const DEFAULT_PARTY_HOST = 'dadosplay.maomur.workers.dev'
 export const PARTY_HOST: string = (import.meta.env.VITE_PARTY_HOST as string | undefined)?.trim() || DEFAULT_PARTY_HOST
 
 /** El modo online solo existe en la web propia con servidor configurado */
