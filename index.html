@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="DadosPlay" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="DadosPlay: el clásico juego de 5 dados y 13 jugadas, para 1 a 4 jugadores o contra bots." />
+    <meta name="theme-color" content="#0B5CAD" />
+    <title>DadosPlay</title>
+    <style>
+      .splash { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+        background: linear-gradient(180deg, #1572CF, #073B73); color: #fff; font-family: "Fredoka Variable", ui-rounded, system-ui, sans-serif; }
+      .splash-logo { width: min(38vw, 38vh, 180px); aspect-ratio: 1; filter: drop-shadow(0 14px 24px rgba(2,28,56,.45)); }
+      .splash-title { font-size: clamp(28px, 7vw, 44px); font-weight: 700; letter-spacing: .01em; }
+      .splash-tag { font-size: clamp(13px, 3.4vw, 17px); color: #FFD866; font-family: "Nunito Variable", system-ui, sans-serif; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <div id="root"><div class="splash" role="img" aria-label="DadosPlay"><div class="splash-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="60 60 400 400" width="100%" height="100%" aria-hidden="true"><defs><linearGradient id="gw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#C9BFAE" stop-opacity=".55"/></linearGradient><linearGradient id="gt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient><filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#021C38" flood-opacity=".45"/></filter></defs><g filter="url(#sh)"><g transform="rotate(-16 200 230)"><rect x="96" y="132" width="200" height="200" rx="40" fill="#B0442D"/><rect x="96" y="132" width="200" height="200" rx="40" fill="url(#gt)"/><circle cx="148" cy="184" r="17" fill="#FBF3E4"/><circle cx="244" cy="280" r="17" fill="#FBF3E4"/><circle cx="196" cy="232" r="17" fill="#FBF3E4"/></g>
+<g transform="rotate(10 310 300)"><rect x="200" y="196" width="220" height="220" rx="44" fill="#FFFFFF"/><rect x="200" y="196" width="220" height="220" rx="44" fill="url(#gw)"/><circle cx="256" cy="252" r="19" fill="#1A1A2E"/><circle cx="364" cy="252" r="19" fill="#1A1A2E"/><circle cx="310" cy="306" r="19" fill="#B0442D"/><circle cx="256" cy="360" r="19" fill="#1A1A2E"/><circle cx="364" cy="360" r="19" fill="#1A1A2E"/></g>
+<path d="M402 96 l12 30 30 12 -30 12 -12 30 -12 -30 -30 -12 30 -12z" fill="#FFC930"/><path d="M118 384 l7 17 17 7 -17 7 -7 17 -7 -17 -17 -7 17 -7z" fill="#FFC930"/></g></svg></div><div class="splash-title">DadosPlay</div><div class="splash-tag">5 dados, 3 tiradas, 13 jugadas</div></div></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

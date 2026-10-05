@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/* Móvil en horizontal: poca altura y más ancho que alto */
+@custom-variant land (@media (orientation: landscape) and (max-height: 600px));
+
+@theme {
+  --color-mar: #0B5CAD;
+  --color-mar-deep: #073B73;
+  --color-cel: #4FC3E8;
+  --color-terracota: #B0442D;
+  --color-sol: #FFC930;
+  --color-arena: #FBF3E4;
+  --color-olivo: #2E8B57;
+  --color-ink: #1A1A2E;
+  --font-display: "Fredoka Variable", ui-rounded, system-ui, sans-serif;
+  --font-sans: "Nunito Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--color-arena);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+button { -webkit-tap-highlight-color: transparent; }
+
+/* En partida la página no se desplaza: solo la hoja de puntos */
+html.in-game, html.in-game body { height: 100%; overflow: hidden; overscroll-behavior: none }
+
+/* ===== Animaciones base ===== */
+@keyframes sheet-in { from { transform: translateY(24px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes toast-in { from { transform: translateY(-8px); opacity: 0 } to { transform: none; opacity: 1 } }
+@keyframes backdrop-in { from { opacity: 0 } to { opacity: 1 } }
+.sheet-in { animation: sheet-in 220ms cubic-bezier(.2,.9,.3,1.1) }
+.toast-in { animation: toast-in 180ms ease-out }
+.backdrop-in { animation: backdrop-in 260ms ease-out both }
+
+/* ===== Dados 3D ===== */
+.die-scene { position: relative; width: var(--die); height: var(--die); isolation: isolate; perspective: 700px }
+.die-cube { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform 1000ms cubic-bezier(.12,.62,.2,1) }
+.die-face {
+  position: absolute; inset: 0; border-radius: 16%;
+  background: radial-gradient(circle at 30% 25%, #FFFFFF 0 35%, #F3EEE4 100%);
+  box-shadow: inset 0 0 0 1px rgba(26,26,46,.25), inset 0 -6px 12px rgba(26,26,46,.12);
+  backface-visibility: hidden; padding: 6%;
+}
+.die-fill { position: absolute; inset: 1%; border-radius: 8%; background: #EDE6D8; backface-visibility: hidden }
+.die-hop { position: absolute; inset: 0; transform-style: preserve-3d }
+.die-shadow {
+  position: absolute; left: 8%; right: 8%; bottom: -16%; height: 16%; border-radius: 50%; z-index: -1;
+  background: radial-gradient(closest-side, rgba(0,0,0,.4), transparent);
+}
+
+/* Bandeja: tapete azul */
+.dice-tray {
+  container-type: inline-size;
+  background: radial-gradient(ellipse at 50% 30%, #1572CF, #0B4F96 70%, #073B73);
+  box-shadow: inset 0 2px 14px rgba(0,0,0,.35), 0 2px 0 rgba(255,255,255,.6);
+}
+.dice-tray .die-scene { --die: min(15cqi, 64px) }
+.die-btn { transition: transform 220ms cubic-bezier(.2,.9,.3,1.3); touch-action: manipulation }
+.die-btn .die-scene { transition: filter 200ms }
+.die-btn.is-held { transform: translateY(-10px) }
+.die-btn.is-held .die-scene { filter: drop-shadow(0 0 0 #FFC930) drop-shadow(0 0 6px #FFC930) }
+.die-btn:active { transform: scale(.94) }
+.die-btn.is-held:active { transform: translateY(-10px) scale(.94) }
+
+/* ===== Hoja de puntos ===== */
+.sc-head { padding: 6px 6px; background: #F6EFE2 }
+.sc-label { padding: 5px 8px; text-align: left; font-weight: 400 }
+.sc-cell { padding: 5px 2px; text-align: center; font-size: 15px; border-left: 1px solid rgba(26,26,46,.06) }
+.sc-row { border-top: 1px solid rgba(26,26,46,.07) }
+.sc-row.is-open { cursor: pointer }
+.sc-row.is-open:active { background: rgba(79,195,232,.12) }
+.sc-row.is-selected { background: rgba(255,201,48,.22) }
+.sc-cur { background: rgba(11,92,173,.05) }
+.sc-cur-head { background: #E3EEF9; box-shadow: inset 0 -3px 0 #0B5CAD }
+.sc-sum { border-top: 1px dashed rgba(26,26,46,.15); background: #FCFAF5 }
+.sc-total { border-top: 2px solid rgba(26,26,46,.2); background: #F6EFE2 }
+.preview {
+  display: inline-grid; place-items: center; min-width: 2.1em; height: 1.8em; padding: 0 .3em; border-radius: .6em;
+  font-weight: 800; color: #0B5CAD; background: rgba(79,195,232,.18); border: 1.5px dashed rgba(11,92,173,.45);
+}
+.preview.is-zero { color: rgba(26,26,46,.4); background: transparent; border-color: rgba(26,26,46,.18) }
+.preview.is-sel { color: #fff; background: #B0442D; border: 1.5px solid #B0442D; animation: sel-pulse 1s ease-in-out infinite }
+@keyframes sel-pulse { 50% { transform: scale(1.12) } }
+
+@keyframes cell-pop { 0% { transform: scale(2.2); color: #2E8B57 } 60% { transform: scale(.9) } 100% { transform: none } }
+.cell-pop { animation: cell-pop 600ms cubic-bezier(.2,.9,.3,1.3) }
+@keyframes float-up { 0% { opacity: 0; transform: translate(-50%, 0) } 20% { opacity: 1 } 100% { opacity: 0; transform: translate(-50%, -28px) } }
+.float-up { font-size: 12px; font-weight: 800; white-space: nowrap; animation: float-up 1100ms ease-out forwards; pointer-events: none }
+
+/* ===== Avisos ===== */
+@keyframes banner-life { 0% { opacity: 0; transform: translateY(-14px) scale(.85) } 15% { opacity: 1; transform: none } 80% { opacity: 1 } 100% { opacity: 0; transform: translateY(-8px) } }
+.turn-banner { animation: banner-life 1300ms ease-out forwards }
+@keyframes bonus-life { 0% { opacity: 0; transform: scale(.4) } 18% { opacity: 1; transform: scale(1.15) } 28% { transform: scale(1) } 80% { opacity: 1 } 100% { opacity: 0; transform: translateY(-24px) } }
+.bonus-banner { animation: bonus-life 1500ms ease-out forwards }
+
+.five-overlay { background: radial-gradient(ellipse at center, rgba(21,114,207,.9), rgba(7,29,58,.95)); animation: backdrop-in 300ms ease-out both }
+@keyframes five-die { 0% { transform: translateY(-120vh) rotate(-200deg) } 70% { transform: translateY(10px) rotate(8deg) } 100% { transform: none } }
+.five-die { animation: five-die 700ms cubic-bezier(.3,1.2,.5,1) both }
+@keyframes five-title { 0% { opacity: 0; transform: scale(3) } 100% { opacity: 1; transform: none } }
+.five-title { animation: five-title 380ms 520ms cubic-bezier(.2,1.5,.4,1) both; color: #FFC930; text-shadow: 0 6px 20px rgba(0,0,0,.4) }
+@keyframes trophy { 0% { transform: scale(0) rotate(-30deg) } 70% { transform: scale(1.15) rotate(6deg) } 100% { transform: none } }
+.trophy { animation: trophy 600ms cubic-bezier(.2,1.4,.4,1) both; box-shadow: 0 10px 24px rgba(0,0,0,.25) }
+
+@media (prefers-reduced-motion: reduce) {
+  .die-cube { transition: none }
+  .turn-banner, .bonus-banner, .five-die, .five-title, .trophy, .cell-pop, .float-up, .preview.is-sel, .sheet-in { animation-duration: .01s !important; animation-delay: 0s !important }
+}
+
+/* ===== Pantalla de bienvenida ===== */
+.splash { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  background: linear-gradient(180deg, #1572CF, #073B73); color: #fff; font-family: var(--font-display); }
+.splash-logo { width: min(38vw, 38vh, 180px); aspect-ratio: 1; filter: drop-shadow(0 14px 24px rgba(2,28,56,.45)); }
+.splash-title { font-size: clamp(28px, 7vw, 44px); font-weight: 700; letter-spacing: .01em }
+.splash-tag { font-size: clamp(13px, 3.4vw, 17px); color: #FFD866; font-family: var(--font-sans); font-weight: 600 }
+@keyframes splash-pop { 0% { transform: scale(.6) rotate(-8deg); opacity: 0 } 60% { transform: scale(1.06) rotate(1deg); opacity: 1 } 100% { transform: none } }
+@keyframes splash-float { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+.splash-pop { animation: splash-pop 650ms cubic-bezier(.2,.9,.3,1.2) both, splash-float 2.4s 650ms ease-in-out infinite }
+@keyframes splash-rise { from { transform: translateY(12px); opacity: 0 } to { transform: none; opacity: 1 } }
+.splash-rise { animation: splash-rise 500ms 250ms ease-out both }
+.splash-rise-2 { animation-delay: 420ms }
+@keyframes splash-out { to { opacity: 0; transform: scale(1.04) } }
+.splash-out { animation: splash-out 450ms ease-in forwards }
+@media (prefers-reduced-motion: reduce) { .splash-pop, .splash-rise, .splash-out { animation: none } .splash-out { opacity: 0 } }
