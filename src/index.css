@@ -69,12 +69,16 @@ html.in-game, html.in-game body { height: 100%; overflow: hidden; overscroll-beh
 
 /* ===== Hoja de puntos ===== */
 .sc-head { padding: 6px 6px; background: #F6EFE2 }
-.sc-label { padding: 5px 8px; text-align: left; font-weight: 400 }
-.sc-cell { padding: 5px 2px; text-align: center; font-size: 15px; border-left: 1px solid rgba(26,26,46,.06) }
+.sc-label { padding: 7px 8px; text-align: left; font-weight: 400 }
+.sc-cell { padding: 7px 2px; text-align: center; font-size: 18px; border-left: 1px solid rgba(26,26,46,.06) }
 .sc-row { border-top: 1px solid rgba(26,26,46,.07) }
-.sc-row.is-open { cursor: pointer }
-.sc-row.is-open:active { background: rgba(79,195,232,.12) }
+
+.sc-row.is-tappable:active { background: rgba(79,195,232,.12) }
+.sc-row.is-tappable { cursor: pointer }
 .sc-row.is-selected { background: rgba(255,201,48,.22) }
+@keyframes row-deny { 0%, 100% { transform: none } 20%, 60% { transform: translateX(-5px) } 40%, 80% { transform: translateX(5px) } }
+.sc-row.is-denied { background: rgba(196,43,28,.16); box-shadow: inset 4px 0 0 #C42B1C }
+.sc-row.is-denied th, .sc-row.is-denied td { animation: row-deny 380ms ease-in-out; color: #A32418 }
 .sc-cur { background: rgba(11,92,173,.05) }
 .sc-cur-head { background: #E3EEF9; box-shadow: inset 0 -3px 0 #0B5CAD }
 .sc-sum { border-top: 1px dashed rgba(26,26,46,.15); background: #FCFAF5 }
@@ -83,7 +87,7 @@ html.in-game, html.in-game body { height: 100%; overflow: hidden; overscroll-beh
   display: inline-grid; place-items: center; min-width: 2.1em; height: 1.8em; padding: 0 .3em; border-radius: .6em;
   font-weight: 800; color: #0B5CAD; background: rgba(79,195,232,.18); border: 1.5px dashed rgba(11,92,173,.45);
 }
-.preview.is-zero { color: rgba(26,26,46,.4); background: transparent; border-color: rgba(26,26,46,.18) }
+.preview.is-zero.is-sel { background: #8E1B2C; border-color: #8E1B2C }
 .preview.is-sel { color: #fff; background: #B0442D; border: 1.5px solid #B0442D; animation: sel-pulse 1s ease-in-out infinite }
 @keyframes sel-pulse { 50% { transform: scale(1.12) } }
 

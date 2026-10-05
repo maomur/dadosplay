@@ -24,8 +24,9 @@ export function DiceTray() {
   const dispatch = useGame((s) => s.dispatch)
   const showToast = useGame((s) => s.showToast)
   const selected = useGame((s) => s.selected)
+  const isMine = useGame((s) => s.isMine)
   const p = view.players[view.current]
-  const human = !p.isBot && view.phase === 'turn'
+  const human = isMine(p.id) && view.phase === 'turn'
   const rolled = hasRolled(view)
 
   const tapDie = (i: number) => {
@@ -69,7 +70,7 @@ export function DiceTray() {
       {!human ? (
         <div className="flex min-h-14 items-center justify-center gap-2 rounded-xl bg-white/80 px-3 text-center font-semibold">
           <span className="h-3 w-3 rounded-full" style={{ background: p.color }} />
-          {view.phase === 'turn' ? t('turn.thinking', { name: p.name }) : t('over.title')}
+          {view.phase !== 'turn' ? t('over.title') : p.isBot ? t('turn.thinking', { name: p.name }) : t('turn.playing', { name: p.name })}
         </div>
       ) : selected ? (
         <div className="flex gap-2">

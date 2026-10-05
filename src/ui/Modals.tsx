@@ -29,6 +29,7 @@ export function InstallApp() {
 export function MenuModal() {
   const setModal = useGame((s) => s.setModal)
   const quit = useGame((s) => s.quitGame)
+  const online = useGame((s) => s.online)
   const close = () => setModal({ type: 'none' })
   return (
     <Sheet title={t('ui.menu')} onClose={close}>
@@ -47,8 +48,8 @@ export function MenuModal() {
           </div>
         </details>
         <ActionButton ignoreBusy onClick={() => setModal({ type: 'help' })}>{t('ui.help')}</ActionButton>
-        <ActionButton ignoreBusy onClick={quit}>{t('menu.exit')}</ActionButton>
-        <p className="text-sm opacity-70">{t('menu.saved')}</p>
+        <ActionButton ignoreBusy onClick={quit}>{online ? t('online.leave') : t('menu.exit')}</ActionButton>
+        {!online && <p className="text-sm opacity-70">{t('menu.saved')}</p>}
       </div>
     </Sheet>
   )
@@ -71,6 +72,8 @@ export function GameOverModal() {
   const quit = useGame((s) => s.quitGame)
   const rematch = useGame((s) => s.rematch)
   const newRecord = useGame((s) => s.newRecord)
+  const online = useGame((s) => s.online)
+  const isHost = !!online?.room && online.room.hostSeatId === online.you
   const ranking = [...game.players].sort((a, b) => total(b.scores, b.fiveKindBonus) - total(a.scores, a.fiveKindBonus))
   const winners = game.players.filter((p) => game.winnerIds.includes(p.id))
   const solo = game.players.length === 1
@@ -79,10 +82,21 @@ export function GameOverModal() {
       title={t('over.title')}
       closable={false}
       footer={
-        <div className="flex gap-2">
-          <ActionButton big variant="primary" className="flex-1" ignoreBusy onClick={rematch}>{t('over.again')}</ActionButton>
-          <ActionButton big className="flex-1" ignoreBusy onClick={quit}>{t('over.new')}</ActionButton>
-        </div>
+        online ? (
+          <div className="grid gap-2">
+            {isHost ? (
+              <ActionButton big variant="primary" className="w-full" ignoreBusy onClick={rematch}>{t('online.rematch')}</ActionButton>
+            ) : (
+              <p className="text-center text-sm">{t('online.waitingRematch')}</p>
+            )}
+            <ActionButton variant="ghost" className="w-full" ignoreBusy onClick={quit}>{t('online.leave')}</ActionButton>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <ActionButton big variant="primary" className="flex-1" ignoreBusy onClick={rematch}>{t('over.again')}</ActionButton>
+            <ActionButton big className="flex-1" ignoreBusy onClick={quit}>{t('over.new')}</ActionButton>
+          </div>
+        )
       }
     >
       <div className="py-2 text-center">

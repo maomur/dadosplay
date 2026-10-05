@@ -27,7 +27,7 @@ const FACE: Partial<Record<Category, number>> = { ones: 1, twos: 2, threes: 3, f
 export function CatIcon({ cat }: { cat: Category }) {
   const face = FACE[cat]
   return (
-    <svg viewBox="0 0 100 100" className="h-6 w-6 shrink-0" aria-hidden="true">
+    <svg viewBox="0 0 100 100" className="h-7 w-7 shrink-0" aria-hidden="true">
       {face ? (
         <MiniDie n={face} />
       ) : cat === 'threeKind' ? (

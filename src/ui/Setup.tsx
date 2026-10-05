@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { onlineAvailable, roomFromUrl } from '../online/config'
+import { lastRoom } from '../online/identity'
+import { normalizeCode } from '../online/protocol'
 import { MAX_PLAYERS, PLAYER_COLORS, type PlayerSetup } from '../engine/state'
 import { useGame } from '../store/gameStore'
 import { SoundToggle } from './Header'
@@ -8,6 +11,48 @@ import { t } from './useT'
 import { SPLASH_LOGO } from './splashLogo'
 
 const DEFAULT_NAMES = ['Ana', 'Marc', 'Laia', 'Pol']
+
+/** Jugar online: crear sala o unirse con un código */
+function OnlineCard({ name }: { name: string }) {
+  const create = useGame((s) => s.onlineCreate)
+  const join = useGame((s) => s.onlineJoin)
+  const fromUrl = roomFromUrl()
+  const [code, setCode] = useState(fromUrl ? normalizeCode(fromUrl) : '')
+  const [myName, setMyName] = useState(name)
+  const previous = lastRoom()
+  return (
+    <section className={`mt-5 rounded-2xl bg-white p-4 shadow-sm ${fromUrl ? 'ring-2 ring-mar' : ''}`}>
+      <h2 className="font-display text-xl font-semibold">🌐 {t('online.title')}</h2>
+      <p className="mt-1 text-sm opacity-75">{t('online.intro')}</p>
+      <label htmlFor="online-name" className="mt-3 block text-sm font-semibold">{t('online.yourName')}</label>
+      <input id="online-name" className="mt-1 h-11 w-full rounded-lg border-2 border-ink/15 px-2" value={myName} maxLength={12} onChange={(e) => setMyName(e.target.value)} />
+      <form
+        className="mt-3 flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (code.length >= 4) join(code, myName)
+        }}
+      >
+        <label htmlFor="online-code" className="sr-only">{t('online.codeLabel')}</label>
+        <input
+          id="online-code"
+          className="h-12 min-w-0 flex-1 rounded-lg border-2 border-mar/30 px-3 font-display text-xl uppercase tracking-[0.15em]"
+          placeholder={t('online.codePlaceholder')}
+          value={code}
+          autoCapitalize="characters"
+          onChange={(e) => setCode(normalizeCode(e.target.value))}
+        />
+        <button type="submit" className="h-12 rounded-xl bg-mar px-4 font-display font-semibold text-white disabled:opacity-40" disabled={code.length < 4}>
+          {t('online.join')}
+        </button>
+      </form>
+      <ActionButton big variant="primary" className="mt-3 w-full" onClick={() => create(myName)}>{t('online.create')}</ActionButton>
+      {previous && !fromUrl && (
+        <ActionButton variant="ghost" className="mt-2 w-full" onClick={() => join(previous, myName)}>{t('online.rejoin', { code: previous })}</ActionButton>
+      )}
+    </section>
+  )
+}
 
 export function Setup() {
   const newGame = useGame((s) => s.newGame)
@@ -28,6 +73,9 @@ export function Setup() {
           <p className="text-terracota">{t('app.tagline')}</p>
         </div>
       </div>
+
+      {onlineAvailable() && <OnlineCard name={players[0].name} />}
+      {onlineAvailable() && <h2 className="mt-8 font-display text-xl font-semibold">📱 {t('online.localTitle')}</h2>}
 
       {saved && (
         <div className="mt-5 rounded-xl border-2 border-olivo/40 bg-white p-3">

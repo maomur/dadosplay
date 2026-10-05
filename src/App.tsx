@@ -5,6 +5,7 @@ import { DiceTray } from './ui/DiceTray'
 import { Header, HeaderButtons } from './ui/Header'
 import { Banners, FiveKindPopup, GameOverModal, HelpModal, MenuModal } from './ui/Modals'
 import { ScoreCard } from './ui/ScoreCard'
+import { Lobby } from './ui/Lobby'
 import { Setup } from './ui/Setup'
 import { Splash } from './ui/Splash'
 import { useLandscape } from './ui/useLandscape'
@@ -63,9 +64,10 @@ function GameScreen() {
 export default function App() {
   const game = useGame((s) => s.game)
   const celebrate = useGame((s) => s.celebrate)
+  const online = useGame((s) => s.online)
   return (
     <>
-      {game ? <GameScreen /> : <Setup />}
+      {game ? <GameScreen /> : online ? <Lobby /> : <Setup />}
       <Toast />
       {game && <Confetti trigger={celebrate} />}
       <Splash />

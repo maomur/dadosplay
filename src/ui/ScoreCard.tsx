@@ -1,6 +1,6 @@
 // Hoja de puntos: una fila por casilla y una columna por jugador.
 // En tu turno, tras tirar, cada casilla libre te enseña cuánto valdría.
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { sfx } from '../audio/sfx'
 import { allowedCategories, LOWER, scoreFor, total, UPPER, UPPER_BONUS, UPPER_BONUS_AT, upperBonus, upperSum, type Category } from '../engine/scoring'
 import type { Player } from '../engine/state'
@@ -37,17 +37,32 @@ export function ScoreCard() {
   const dispatch = useGame((s) => s.dispatch)
   const showToast = useGame((s) => s.showToast)
   const flash = useGame((s) => s.flash)
+  const isMine = useGame((s) => s.isMine)
+  // Fila tocada que no se puede usar: se pone en rojo un momento
+  const [denied, setDenied] = useState<{ cat: Category; id: number } | null>(null)
+  const deniedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const cur = view.players[view.current]
-  const myTurn = view.phase === 'turn' && !cur.isBot && hasRolled(view) && !busy
+  const myTurn = view.phase === 'turn' && isMine(cur.id) && hasRolled(view) && !busy
   const allowed = myTurn ? allowedCategories(cur.scores, view.dice) : []
   const many = view.players.length > 2
 
   const tapRow = (c: Category) => {
-    if (!myTurn) return
+    if (!myTurn) {
+      if (view.phase === 'turn' && isMine(cur.id) && !busy && !hasRolled(view)) showToast(t('why.rollFirst'))
+      return
+    }
     const check = canScore(game, c)
     if (!check.ok) {
       sfx.deny()
       showToast(t(check.reason))
+      if (deniedTimer.current) clearTimeout(deniedTimer.current)
+      setDenied({ cat: c, id: Date.now() })
+      deniedTimer.current = setTimeout(() => setDenied(null), 900)
+      try {
+        navigator.vibrate?.([30, 40, 30])
+      } catch {
+        /* sin vibración */
+      }
       return
     }
     if (selected === c) dispatch({ type: 'score', category: c })
@@ -71,9 +86,9 @@ export function ScoreCard() {
         </td>
       )
     }
-    if (isCur && allowed.includes(c)) {
+    if (isCur && allowed.includes(c) && selected === c) {
       const pts = scoreFor(c, view.dice, p.scores)
-      const sel = selected === c
+      const sel = true
       return (
         <td key={p.id} className={`sc-cell sc-cur ${sel ? 'sc-sel' : ''}`}>
           <span className={`preview ${pts === 0 ? 'is-zero' : ''} ${sel ? 'is-sel' : ''}`}>{pts}</span>
@@ -86,13 +101,17 @@ export function ScoreCard() {
   const row = (c: Category) => {
     const can = allowed.includes(c)
     return (
-      <tr key={c} onClick={() => tapRow(c)} className={`sc-row ${can ? 'is-open' : ''} ${selected === c ? 'is-selected' : ''}`}>
+      <tr
+        key={denied?.cat === c ? `${c}-${denied.id}` : c}
+        onClick={() => tapRow(c)}
+        className={`sc-row ${can ? 'is-open' : ''} ${myTurn ? 'is-tappable' : ''} ${selected === c ? 'is-selected' : ''} ${denied?.cat === c ? 'is-denied' : ''}`}
+      >
         <th scope="row" className="sc-label">
           <span className="flex items-center gap-2">
             <CatIcon cat={c} />
             <span className="min-w-0">
-              <span className="block truncate font-semibold leading-tight">{t(`cat.${c}`)}</span>
-              {!many && <span className="block truncate text-[11px] leading-tight opacity-60">{t(`hint.${c}`)}</span>}
+              <span className="block truncate text-[17px] font-semibold leading-tight">{t(`cat.${c}`)}</span>
+              {!many && <span className="block truncate text-[13px] leading-tight opacity-60">{t(`hint.${c}`)}</span>}
             </span>
           </span>
         </th>
