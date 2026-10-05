@@ -6,15 +6,18 @@ const COLORS = ['#FFC930', '#0B5CAD', '#B0442D', '#2E8B57', '#4FC3E8', '#E0458B'
 export function Confetti({ trigger, pieces = 160 }: { trigger: number; pieces?: number }) {
   const ref = useRef<HTMLCanvasElement>(null)
   useEffect(() => {
-    if (!trigger) return
+    // Solo celebraciones recién ocurridas: al volver a montar (revancha, reconexión) no se repite
+    if (!trigger || Date.now() - trigger > 1500) return
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
     const c = ref.current
     if (!c) return
     const ctx = c.getContext('2d')
     if (!ctx) return
     const dpr = Math.min(2, window.devicePixelRatio || 1)
-    c.width = innerWidth * dpr
-    c.height = innerHeight * dpr
+    const W = innerWidth
+    const H = innerHeight
+    c.width = W * dpr
+    c.height = H * dpr
     ctx.scale(dpr, dpr)
     // Dos cañones desde abajo a los lados, como en una fiesta mayor
     const parts = Array.from({ length: pieces }, (_, i) => {
@@ -38,7 +41,7 @@ export function Confetti({ trigger, pieces = 160 }: { trigger: number; pieces?: 
     let raf = 0
     const frame = (now: number) => {
       const t = now - start
-      ctx.clearRect(0, 0, innerWidth, innerHeight)
+      ctx.clearRect(0, 0, W, H)
       for (const p of parts) {
         p.vy += 0.28
         p.vx *= 0.99
@@ -62,10 +65,18 @@ export function Confetti({ trigger, pieces = 160 }: { trigger: number; pieces?: 
         ctx.restore()
       }
       if (t < 2700) raf = requestAnimationFrame(frame)
-      else ctx.clearRect(0, 0, innerWidth, innerHeight)
+      else wipe()
+    }
+    // Vaciar el lienzo entero (redimensionarlo borra todo, aunque la pantalla haya cambiado de alto)
+    const wipe = () => {
+      c.width = 0
+      c.height = 0
     }
     raf = requestAnimationFrame(frame)
-    return () => cancelAnimationFrame(raf)
+    return () => {
+      cancelAnimationFrame(raf)
+      wipe()
+    }
   }, [trigger, pieces])
   return <canvas ref={ref} className="pointer-events-none fixed inset-0 z-[65] h-full w-full" aria-hidden="true" />
 }

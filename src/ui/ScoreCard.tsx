@@ -110,8 +110,8 @@ export function ScoreCard() {
           <span className="flex items-center gap-2">
             <CatIcon cat={c} />
             <span className="min-w-0">
-              <span className="block truncate text-[17px] font-semibold leading-tight">{t(`cat.${c}`)}</span>
-              {!many && <span className="block truncate text-[13px] leading-tight opacity-60">{t(`hint.${c}`)}</span>}
+              <span className="block truncate text-[clamp(17px,5.4vw,21px)] font-semibold leading-tight land:text-[19px]">{t(`cat.${c}`)}</span>
+              {!many && <span className="block truncate text-[clamp(13px,4vw,16px)] leading-tight opacity-60 land:text-[14px]">{t(`hint.${c}`)}</span>}
             </span>
           </span>
         </th>
@@ -124,7 +124,7 @@ export function ScoreCard() {
     <div className="scorecard overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-ink/10">
       <table className="w-full table-fixed border-collapse text-sm">
         <colgroup>
-          <col className={many ? 'w-[38%]' : 'w-[50%]'} />
+          <col className={many ? 'w-[40%]' : 'w-[54%]'} />
           {view.players.map((p) => <col key={p.id} />)}
         </colgroup>
         <thead>
@@ -134,7 +134,7 @@ export function ScoreCard() {
               <th key={p.id} className={`sc-head ${i === view.current && view.phase === 'turn' ? 'sc-cur-head' : ''}`}>
                 <span className="flex flex-col items-center gap-0.5">
                   <span className="h-2.5 w-2.5 rounded-full" style={{ background: p.color }} />
-                  <span className="w-full truncate text-xs font-bold">{p.name}</span>
+                  <span className="w-full truncate text-sm font-bold">{p.name}</span>
                 </span>
               </th>
             ))}
@@ -143,7 +143,7 @@ export function ScoreCard() {
         <tbody>
           {UPPER.map(row)}
           <tr className="sc-sum">
-            <th scope="row" className="sc-label text-xs">{t('card.bonus')}</th>
+            <th scope="row" className="sc-label text-[15px]">{t('card.bonus')}</th>
             {view.players.map((p, i) => {
               const up = upperSum(p.scores)
               const got = upperBonus(p.scores) > 0
@@ -153,7 +153,7 @@ export function ScoreCard() {
                     <span className="font-bold text-olivo">+{UPPER_BONUS}</span>
                   ) : (
                     <span className="flex flex-col items-center">
-                      <span className="text-[11px] tabular-nums opacity-70">{up}/{UPPER_BONUS_AT}</span>
+                      <span className="text-sm tabular-nums opacity-70">{up}/{UPPER_BONUS_AT}</span>
                       <span className="mt-0.5 h-1 w-8 overflow-hidden rounded bg-ink/10">
                         <span className="block h-full bg-sol" style={{ width: `${Math.min(100, (up / UPPER_BONUS_AT) * 100)}%` }} />
                       </span>
@@ -178,10 +178,10 @@ export function ScoreCard() {
             </tr>
           )}
           <tr className="sc-total">
-            <th scope="row" className="sc-label font-display text-base">{t('card.total')}</th>
+            <th scope="row" className="sc-label font-display text-xl">{t('card.total')}</th>
             {view.players.map((p, i) => (
               <td key={p.id} className={`sc-cell ${i === view.current ? 'sc-cur' : ''}`}>
-                <AnimatedNumber value={total(p.scores, p.fiveKindBonus)} className="font-display text-lg font-bold" />
+                <AnimatedNumber value={total(p.scores, p.fiveKindBonus)} className="font-display text-2xl font-bold" />
               </td>
             ))}
           </tr>
